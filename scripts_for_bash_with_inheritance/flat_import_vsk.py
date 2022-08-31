@@ -47,11 +47,20 @@ headers_eng = {
 }
 
 
+def trim_all_columns(df):
+    """
+    Trim whitespace from ends of each value across all series in dataframe
+    """
+    trim_strings = lambda x: x.strip() if isinstance(x, str) else x
+    return df.applymap(trim_strings)
+
+
 df = pd.read_csv(input_file_path)
 df = df.replace({np.nan: None})
 df = df.rename(columns=headers_eng)
 df = df.loc[:, ~df.columns.isin(['direction', 'tnved_group_name', 'shipper_inn',
                                  'shipper_name_unified', 'departure_country'])]
+df = trim_all_columns(df)
 parsed_data = df.to_dict('records')
 for dict_data in parsed_data:
     for key, value in dict_data.items():
