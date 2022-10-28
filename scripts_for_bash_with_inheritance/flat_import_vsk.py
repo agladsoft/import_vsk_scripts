@@ -69,7 +69,7 @@ for dict_data in parsed_data:
             if key in ['year', 'month', 'teu', 'container_size']:
                 dict_data[key] = int(value)
             elif key in ['tnved_group_id']:
-                dict_data[key] = f"{int(value):02d}"
+                dict_data[key] = f"{int(value)}"
             elif key == 'terminal':
                 dict_data[key] = os.environ.get('XL_VSK_IMPORT')
             elif key == 'combined_cargo':
