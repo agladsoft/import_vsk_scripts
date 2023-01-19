@@ -87,6 +87,7 @@ for index, dict_data in enumerate(parsed_data):
         deleted_index.append(index)
 basename = os.path.basename(input_file_path)
 output_file_path = os.path.join(output_folder, f'{basename}.json')
-parsed_data = [i for j, i in enumerate(parsed_data) if j not in deleted_index]
+for index in sorted(deleted_index, reverse=True):
+    del parsed_data[index]
 with open(f"{output_file_path}", 'w', encoding='utf-8') as f:
     json.dump(parsed_data, f, ensure_ascii=False, indent=4)
