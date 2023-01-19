@@ -60,33 +60,28 @@ def convert_to_int(val):
 
 df = pd.read_csv(input_file_path, dtype=str)
 df = df.replace({np.nan: None})
+df = df.dropna(axis=0, how='all')
 df = df.rename(columns=headers_eng)
 df = df.loc[:, ~df.columns.isin(['direction', 'tnved_group_name', 'shipper_inn',
                                  'shipper_name_unified', 'departure_country'])]
 df = trim_all_columns(df)
 parsed_data = df.to_dict('records')
-deleted_index = []
-for index, dict_data in enumerate(parsed_data):
-    if any(list(dict_data.values())):
-        for key, value in dict_data.items():
-            with contextlib.suppress(Exception):
-                if key in ['year', 'month', 'teu', 'container_size', 'container_count']:
-                    dict_data[key] = convert_to_int(value)
-                elif key in ['goods_weight_netto', 'goods_weight_brutto']:
-                    dict_data[key] = float(value)
-                elif key in ['tnved_group_id']:
-                    dict_data[key] = f"{int(value)}"
-                elif key == 'terminal':
-                    dict_data[key] = os.environ.get('XL_VSK_IMPORT')
-                elif key == 'combined_cargo':
-                    dict_data[key] = value in ['1', 1, 'да', 'Да', 'True']
-        dict_data['original_file_name'] = os.path.basename(input_file_path)
-        dict_data['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    else:
-        deleted_index.append(index)
+for dict_data in parsed_data:
+    for key, value in dict_data.items():
+        with contextlib.suppress(Exception):
+            if key in ['year', 'month', 'teu', 'container_size', 'container_count']:
+                dict_data[key] = convert_to_int(value)
+            elif key in ['goods_weight_netto', 'goods_weight_brutto']:
+                dict_data[key] = float(value)
+            elif key in ['tnved_group_id']:
+                dict_data[key] = f"{int(value)}"
+            elif key == 'terminal':
+                dict_data[key] = os.environ.get('XL_VSK_IMPORT')
+            elif key == 'combined_cargo':
+                dict_data[key] = value in ['1', 1, 'да', 'Да', 'True']
+    dict_data['original_file_name'] = os.path.basename(input_file_path)
+    dict_data['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 basename = os.path.basename(input_file_path)
 output_file_path = os.path.join(output_folder, f'{basename}.json')
-for index in sorted(deleted_index, reverse=True):
-    del parsed_data[index]
 with open(f"{output_file_path}", 'w', encoding='utf-8') as f:
     json.dump(parsed_data, f, ensure_ascii=False, indent=4)
