@@ -14,7 +14,7 @@ headers_eng = {
     "Месяц": "month",
     "Период": "period",
     "Линия": "line",
-    "Порт": "departure_port",
+    "Порт": "tracking_seaport",
     "Страна": "departure_country",
     "Отправитель": "shipper_name",
     "Получатель": "consignee_name",
@@ -31,13 +31,13 @@ headers_eng = {
     "Наименование Группы": "tnved_group_name",
     "ИНН": "shipper_inn",
     "УНИ-компания": "shipper_name_unified",
-    "Страна КОМПАНИИ": "shipper_country",
+    "Страна КОМПАНИИ": "consignee_country",
     "Направление": "direction",
     "Тип убытия": "departure_type",
     "Коносамент": "consignment",
     "Судно": "ship_name",
     "Рейс": "voyage",
-    "Тип парка": "park_type",
+    "Тип парка": "is_empty",
     "Агент": "agent",
     "Станция УКП": "station_ukp",
     "Сборный груз": "combined_cargo",
@@ -79,6 +79,8 @@ for dict_data in parsed_data:
                 dict_data[key] = os.environ.get('XL_VSK_IMPORT')
             elif key == 'combined_cargo':
                 dict_data[key] = value in ['1', 1, 'да', 'Да', 'True']
+            elif key in ['is_empty']:
+                dict_data[key] = value == 'Порожний'
     dict_data['original_file_name'] = os.path.basename(input_file_path)
     dict_data['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 basename = os.path.basename(input_file_path)
