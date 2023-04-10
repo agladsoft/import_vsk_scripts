@@ -37,7 +37,7 @@ headers_eng = {
     "Коносамент": "consignment",
     "Судно": "ship_name",
     "Рейс": "voyage",
-    "Тип парка": "is_empty",
+    "Порожний": "is_empty",
     "Агент": "agent",
     "Станция УКП": "station_ukp",
     "Сборный груз": "combined_cargo",
@@ -80,7 +80,7 @@ for dict_data in parsed_data:
             elif key == 'combined_cargo':
                 dict_data[key] = value in ['1', 1, 'да', 'Да', 'True']
             elif key in ['is_empty']:
-                dict_data[key] = value == 'Порожний'
+                dict_data[key] = value in ['1', 1, 'да', 'Да', 'True']
     dict_data['original_file_name'] = os.path.basename(input_file_path)
     dict_data['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 basename = os.path.basename(input_file_path)
