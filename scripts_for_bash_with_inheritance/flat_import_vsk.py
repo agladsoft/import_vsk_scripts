@@ -41,6 +41,7 @@ headers_eng = {
     "Агент": "agent",
     "Станция УКП": "station_ukp",
     "Сборный груз": "combined_cargo",
+    "Номер ГТД": "gtd_number",
     "Станция назначени (план)": "destination_station",
     "Вес нетто": "goods_weight_netto",
     "Вес брутто": "goods_weight_brutto"
@@ -81,6 +82,8 @@ for dict_data in parsed_data:
                 dict_data[key] = value in ['1', 1, 'да', 'Да', 'True']
             elif key in ['is_empty']:
                 dict_data[key] = value in ['1', 1, 'да', 'Да', 'True']
+            elif key in ['gtd_number']:
+                dict_data[key] = 'Нет данных' if value is None else value
     dict_data['original_file_name'] = os.path.basename(input_file_path)
     dict_data['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 basename = os.path.basename(input_file_path)
