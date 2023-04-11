@@ -82,7 +82,6 @@ class ImportVSK(object):
         The main function where we read the Excel file and write the file to json.
         """
         df: DataFrame = pd.read_excel(self.input_file_path)
-        df = df.replace({np.nan: None})
         df = df.dropna(axis=0, how='all')
         df = df.rename(columns=headers_eng)
         df['original_file_name'] = os.path.basename(self.input_file_path)
@@ -90,6 +89,7 @@ class ImportVSK(object):
         df = df.loc[:, ~df.columns.isin(['direction', 'tnved_group_name', 'shipper_inn',
                                          'shipper_name_unified', 'departure_country'])]
         df = self.trim_all_columns(df)
+        df = df.replace({np.nan: None})
         self.change_type_and_values(df)
         self.write_to_json(df.to_dict('records'))
 
