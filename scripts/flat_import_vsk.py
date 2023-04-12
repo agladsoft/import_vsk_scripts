@@ -53,7 +53,7 @@ class ImportVSK(object):
         self.output_folder: str = output_folder
 
     @staticmethod
-    def change_type_and_values(df) -> None:
+    def change_type_and_values(df: DataFrame) -> None:
         """
         Change data types or changing values.
         """
@@ -61,14 +61,14 @@ class ImportVSK(object):
             df['shipment_date'] = df['shipment_date'].dt.date.astype(str)
             df[['gtd_number']] = df[['gtd_number']].apply(lambda x: x.fillna('Нет данных'))
 
-    def add_new_columns(self, df) -> None:
+    def add_new_columns(self, df: DataFrame) -> None:
         """
         Add new columns.
         """
         df['original_file_name'] = os.path.basename(self.input_file_path)
         df['original_file_parsed_on'] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-    def write_to_json(self, parsed_data) -> None:
+    def write_to_json(self, parsed_data: list[dict]) -> None:
         """
         Write data to json.
         """
