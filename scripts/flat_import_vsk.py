@@ -10,7 +10,6 @@ from datetime import datetime
 headers_eng: dict = {
     "Год": "year",
     "Месяц": "month",
-    "Период": "period",
     "Линия": "line",
     "Дата отгрузки": "shipment_date",
     "Порт": "tracking_seaport",
@@ -87,8 +86,6 @@ class ImportVSK(object):
         df = df.rename(columns=headers_eng)
         renamed_columns = list(df.columns)
         df = df.drop(columns=set(original_columns) & set(renamed_columns))
-        df = df.loc[:, ~df.columns.isin(['direction', 'tnved_group_name', 'shipper_inn',
-                                         'shipper_name_unified', 'departure_country'])]
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
         self.add_new_columns(df)
         self.change_type_and_values(df)
