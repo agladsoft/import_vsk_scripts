@@ -41,7 +41,7 @@ headers_eng: dict = {
     "Сборный груз": "combined_cargo",
     "Номер ГТД": "gtd_number",
     "Станция назначени (план)": "destination_station",
-    "Вес нетто": "goods_weight_netto",
+    "Вес нетто": "goods_weight_with_package",
     "Вес брутто": "goods_weight_brutto"
 }
 
