@@ -43,15 +43,14 @@ class Parsed:
 
     def get_port(self):
         self.add_new_columns()
+        logging.info("Запросы к микросервису")
         for index, row in self.df.iterrows():
-            if self.check_line(row['line']):
-                continue
-            print(index)
             port = self.get_result(row)
-            self.write_port(index, row, port)
+            self.write_port(index,port)
+        logging.info('Обработка закончена')
         return self.df
 
-    def write_port(self, index, row, port):
+    def write_port(self, index, port):
         self.df.at[index, 'is_auto_tracking'] = True
         if port:
             self.df.at[index, 'is_auto_tracking_ok'] = True
