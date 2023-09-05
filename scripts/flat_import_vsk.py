@@ -92,7 +92,7 @@ class ImportVSK(object):
         self.change_type_and_values(df)
         df = df.replace({np.nan: None, "NaT": None})
         df["direction"] = df["direction"].replace({"импорт": "import", "экспорт": "export", "каботаж": "cabotage"})
-        df = Parsed(df).get_port()
+        Parsed(df).get_port()
         self.write_to_json(df.to_dict('records'))
 
 
