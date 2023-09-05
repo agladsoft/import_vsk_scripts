@@ -49,6 +49,7 @@ class Parsed:
             print(index)
             port = self.get_result(row)
             self.write_port(index, row, port)
+        return self.df
 
     def write_port(self, index, row, port):
         self.df.at[index, 'is_auto_tracking'] = True
