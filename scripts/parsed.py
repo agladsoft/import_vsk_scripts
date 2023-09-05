@@ -1,4 +1,5 @@
 import json
+import logging
 
 import requests
 
@@ -30,10 +31,14 @@ class Parsed:
     def get_result(self, row):
         body = self.body(row)
         body = json.dumps(body)
-        answer = requests.post(self.url, data=body, headers=self.headers)
-        if answer.status_code != 200:
+        try:
+            answer = requests.post(self.url, data=body, headers=self.headers)
+            if answer.status_code != 200:
+                return None
+            result = answer.json()
+        except Exception as ex:
+            logging.info(f'Ошибка {ex}')
             return None
-        result = answer.json()
         return result
 
     def get_port(self):
