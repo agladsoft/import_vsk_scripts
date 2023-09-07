@@ -15,7 +15,7 @@ class Parsed:
         }
 
     def get_direction(self,direction):
-        if direction.lower() in IMPORT:
+        if direction in IMPORT:
             return 'import'
         else:return 'export'
 
