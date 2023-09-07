@@ -4,7 +4,7 @@ import logging
 import requests
 
 LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR']
-IMPORT = ['импорт','import']
+IMPORT = ['импорт','import', 'Импорт']
 
 class Parsed:
     def __init__(self, df):
