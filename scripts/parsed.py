@@ -4,7 +4,7 @@ import logging
 import requests
 
 LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR']
-IMPORT = ['импорт','import', 'Импорт']
+IMPORT = ['импорт','import']
 
 class Parsed:
     def __init__(self, df):
@@ -15,7 +15,7 @@ class Parsed:
         }
 
     def get_direction(self,direction):
-        if direction in IMPORT:
+        if direction.lower() in IMPORT:
             return 'import'
         else:return 'export'
 
