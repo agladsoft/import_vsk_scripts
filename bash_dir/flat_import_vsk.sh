@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_PATH_VSK_IMPORT}/flat_import_vsk"
+xls_path="${XL_IDP_PATH_VSK_IMPORT}/flat_import_vsk_tracking"
 
 done_path="${xls_path}"/done
 if [ ! -d "$done_path" ]; then
