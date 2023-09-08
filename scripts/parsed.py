@@ -45,10 +45,10 @@ class Parsed:
         self.add_new_columns()
         logging.info("Запросы к микросервису")
         for index, row in self.df.iterrows():
-            port = self.get_result(row)
-            self.write_port(index,port)
+            if row.get('enforce_auto_tracking', True):
+                port = self.get_result(row)
+                self.write_port(index,port)
         logging.info('Обработка закончена')
-        return self.df
 
     def write_port(self, index, port):
         self.df.at[index, 'is_auto_tracking'] = True
