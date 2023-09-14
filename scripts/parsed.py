@@ -80,4 +80,5 @@ class Parsed:
         return False
 
     def add_new_columns(self):
-        self.df['is_auto_tracking'] = None
+        if "enforce_auto_tracking" not in self.df.columns:
+            self.df['is_auto_tracking'] = None
