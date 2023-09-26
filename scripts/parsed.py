@@ -51,9 +51,15 @@ class Parsed:
                 if row.get('enforce_auto_tracking', True):
                     port = self.get_result(row)
                     self.write_port(index, port)
-                    data[row.get('consignment')]['tracking_seaport'] = row.get('tracking_seaport')
-                    data[row.get('consignment')]['is_auto_tracking'] = row.get('is_auto_tracking')
-                    data[row.get('consignment')]['is_auto_tracking_ok'] = row.get('is_auto_tracking_ok')
+                    try:
+                        data[row.get('consignment')].setdefault('tracking_seaport',
+                                                                     self.df.get('tracking_seaport')[index])
+                        data[row.get('consignment')].setdefault('is_auto_tracking',
+                                                                     self.df.get('is_auto_tracking')[index])
+                        data[row.get('consignment')].setdefault('is_auto_tracking_ok',
+                                                                     self.df.get('is_auto_tracking_ok')[index])
+                    except KeyError as ex:
+                        logging.info(f'Ошибка при получение ключа из DataFrame {ex}')
             else:
                 tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
                     row.get('consignment')) is not None else None
