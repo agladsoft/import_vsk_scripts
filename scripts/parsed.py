@@ -3,7 +3,10 @@ import logging
 
 import requests
 
-LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR']
+LINES = ['СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor',
+         'ARKAS', 'arkas', 'Arkas',
+         'MSC', 'msc', 'Msc', 'SINOKOR', 'sinokor', 'Sinokor', 'SINAKOR', 'sinakor', 'HUENG-A LINE',
+         'HEUNG-A LINE CO., LTD', 'heung']
 IMPORT = ['импорт','import']
 
 class Parsed:
@@ -46,6 +49,8 @@ class Parsed:
         logging.info("Запросы к микросервису")
         data = {}
         for index, row in self.df.iterrows():
+            if row.get('line').upper() not in LINES:
+                continue
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
                 if row.get('enforce_auto_tracking', True):
