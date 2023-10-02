@@ -7,20 +7,22 @@ LINES = ['СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKO
          'ARKAS', 'arkas', 'Arkas',
          'MSC', 'msc', 'Msc', 'SINOKOR', 'sinokor', 'Sinokor', 'SINAKOR', 'sinakor', 'HUENG-A LINE',
          'HEUNG-A LINE CO., LTD', 'heung']
-IMPORT = ['импорт','import']
+IMPORT = ['импорт', 'import']
+
 
 class Parsed:
     def __init__(self, df):
         self.df = df
-        self.url = "http://service_consignment:8004"
+        self.url = "http://51.250.21.126:8004"
         self.headers = {
             'Content-Type': 'application/json'
         }
 
-    def get_direction(self,direction):
+    def get_direction(self, direction):
         if direction.lower() in IMPORT:
             return 'import'
-        else:return 'export'
+        else:
+            return 'export'
 
     def body(self, row):
         data = {
@@ -58,11 +60,11 @@ class Parsed:
                     self.write_port(index, port)
                     try:
                         data[row.get('consignment')].setdefault('tracking_seaport',
-                                                                     self.df.get('tracking_seaport')[index])
+                                                                self.df.get('tracking_seaport')[index])
                         data[row.get('consignment')].setdefault('is_auto_tracking',
-                                                                     self.df.get('is_auto_tracking')[index])
+                                                                self.df.get('is_auto_tracking')[index])
                         data[row.get('consignment')].setdefault('is_auto_tracking_ok',
-                                                                     self.df.get('is_auto_tracking_ok')[index])
+                                                                self.df.get('is_auto_tracking_ok')[index])
                     except KeyError as ex:
                         logging.info(f'Ошибка при получение ключа из DataFrame {ex}')
             else:
