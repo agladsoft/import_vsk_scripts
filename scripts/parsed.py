@@ -51,7 +51,7 @@ class Parsed:
         logging.info("Запросы к микросервису")
         data = {}
         for index, row in self.df.iterrows():
-            if row.get('line').upper() not in LINES:
+            if row.get('line').upper() not in LINES or row.get('tracking_seaport') is not None:
                 continue
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
