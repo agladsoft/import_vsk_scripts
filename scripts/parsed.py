@@ -13,7 +13,7 @@ IMPORT = ['импорт', 'import']
 class Parsed:
     def __init__(self, df):
         self.df = df
-        self.url = "http://158.160.77.121:8005"
+        self.url = "http://158.160.77.121:8004"
         self.headers = {
             'Content-Type': 'application/json'
         }
