@@ -46,6 +46,18 @@ headers_eng: dict = {
     "Вес брутто": "goods_weight_brutto"
 }
 
+dict_types: dict = {
+    "ИНН": str,
+    "Год": int,
+    "Месяц": int,
+    "Размер контейнера": int,
+    "TEU": int,
+    "Кол-во контейнеров, шт.": int,
+    "goods_weight_with_package": float,
+    "goods_weight_brutto": float,
+
+}
+
 
 class ImportVSK(object):
     def __init__(self, input_file_path: str, output_folder: str):
@@ -81,7 +93,7 @@ class ImportVSK(object):
         """
         The main function where we read the Excel file and write the file to json.
         """
-        df: DataFrame = pd.read_excel(self.input_file_path, dtype={"ИНН": str})
+        df: DataFrame = pd.read_excel(self.input_file_path, dtype=dict_types)
         df = df.dropna(axis=0, how='all')
         original_columns = list(df.columns)
         df = df.rename(columns=headers_eng)
