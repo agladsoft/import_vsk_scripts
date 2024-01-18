@@ -24,10 +24,18 @@ class Parsed:
         else:
             return 'export'
 
+    @staticmethod
+    def get_consignment(consignment: str) -> str:
+        lst_consignment: list = consignment.strip().split(',')
+        if len(lst_consignment) > 1:
+            return lst_consignment[0]
+        return consignment
+
     def body(self, row):
+        consignment = self.get_consignment(row.get('consignment'))
         data = {
             'line': row['line'],
-            'consignment': row['consignment'],
+            'consignment': consignment,
             'direction': self.get_direction(row['direction'])
 
         }
