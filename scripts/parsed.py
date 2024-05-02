@@ -45,12 +45,12 @@ class Parsed:
         body = self.body(row)
         body = json.dumps(body)
         try:
-            answer = requests.post(self.url, data=body, headers=self.headers)
+            answer = requests.post(self.url, data=body, headers=self.headers, timeout=180)
             if answer.status_code != 200:
                 return None
             result = answer.json()
         except Exception as ex:
-            logging.info(f'Ошибка {ex}')
+            logging.error(f'Ошибка {ex}')
             return None
         return result
 
