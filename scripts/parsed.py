@@ -1,6 +1,6 @@
 import json
 import logging
-
+import os
 import requests
 
 LINES = ['СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor',
@@ -13,7 +13,7 @@ IMPORT = ['импорт', 'import']
 class Parsed:
     def __init__(self, df):
         self.df = df
-        self.url = "http://158.160.77.121:8004"
+        self.url = f"http://{os.environ['IP_ADDRESS_CONSIGNMENTS']}:8004"
         self.headers = {
             'Content-Type': 'application/json'
         }
