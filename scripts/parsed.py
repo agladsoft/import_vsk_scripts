@@ -1,13 +1,50 @@
+import os
+import sys
 import json
 import logging
-import os
 import requests
+from dotenv import load_dotenv
+from clickhouse_connect import get_client
+from clickhouse_connect.driver import Client
 
 LINES = ['СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor',
          'ARKAS', 'arkas', 'Arkas',
          'MSC', 'msc', 'Msc', 'SINOKOR', 'sinokor', 'Sinokor', 'SINAKOR', 'sinakor', 'HUENG-A LINE',
          'HEUNG-A LINE CO., LTD', 'heung']
 IMPORT = ['импорт', 'import']
+
+
+load_dotenv()
+
+
+def get_my_env_var(var_name: str) -> str:
+    try:
+        return os.environ[var_name]
+    except KeyError as e:
+        raise MissingEnvironmentVariable(f"{var_name} does not exist") from e
+
+
+class MissingEnvironmentVariable(Exception):
+    pass
+
+
+def clickhouse_client():
+    try:
+        client: Client = get_client(host=get_my_env_var('HOST'), database=get_my_env_var('DATABASE'),
+                                    username=get_my_env_var('USERNAME_DB'), password=get_my_env_var('PASSWORD'))
+        logging.info('Connection to ClickHouse is successful')
+    except Exception as ex_connect:
+        logging.info(f"Error connecting to ClickHouse: {ex_connect}")
+        sys.exit(1)
+    return client
+
+
+def reel_shipping_list_name():
+    reel_shipping = 'REEL SHIPPING'
+    client = clickhouse_client()
+    query = client.query(f"Select line from default.reference_lines where line_unified = '{reel_shipping}'")
+    result = [i[0].upper() for i in query.result_rows] if query.result_rows else None
+    return result
 
 
 class Parsed:
@@ -58,8 +95,9 @@ class Parsed:
         self.add_new_columns()
         logging.info("Запросы к микросервису")
         data = {}
+        lines = reel_shipping_list_name()
         for index, row in self.df.iterrows():
-            if row.get('line').upper() not in LINES or row.get('tracking_seaport') is not None:
+            if row.get('line').upper() not in lines or row.get('tracking_seaport') is not None:
                 continue
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
@@ -95,7 +133,8 @@ class Parsed:
         else:
             self.df.at[index, 'is_auto_tracking_ok'] = False
 
-    def check_line(self, line):
+    @staticmethod
+    def check_line(line):
         if line not in LINES:
             return True
         return False
