@@ -1,3 +1,4 @@
+import re
 import os
 import sys
 import json
@@ -62,21 +63,17 @@ class Parsed:
             return 'export'
 
     @staticmethod
-    def get_consignment(consignment: str) -> str:
-        lst_consignment: list = consignment.strip().split(',')
-        if len(lst_consignment) > 1:
-            return lst_consignment[0]
-        return consignment
+    def get_number_consignment(consignment):
+        lst_consignment: list = list(filter(None, re.split(r",|\s", consignment)))
+        return lst_consignment[0].strip() if len(lst_consignment) > 1 else consignment
 
     def body(self, row):
-        consignment = self.get_consignment(row.get('consignment'))
-        data = {
+        consignment_number = self.get_number_consignment(row.get('consignment'))
+        return {
             'line': row['line'],
-            'consignment': consignment,
-            'direction': self.get_direction(row['direction'])
-
+            'consignment': consignment_number,
+            'direction': self.get_direction(row['direction']),
         }
-        return data
 
     def get_result(self, row):
         body = self.body(row)
