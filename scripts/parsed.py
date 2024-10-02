@@ -9,6 +9,11 @@ from typing import Optional, List
 from dotenv import load_dotenv
 from clickhouse_connect import get_client
 from clickhouse_connect.driver import Client
+from prometheus_client import start_http_server, Gauge
+
+TIME_REQUEST_SENT = Gauge('time_request_sent_seconds', 'Time when request was sent')
+TIME_PROCESSING_STARTED = Gauge('time_processing_started_seconds', 'Time when processing started')
+TIME_REQUEST_RECEIVED = Gauge('time_request_received_seconds', 'Time when response was received')
 
 # LINES = ['СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor',
 #          'ARKAS', 'arkas', 'Arkas',
@@ -118,9 +123,12 @@ class ParsedDf:
         if number_attempts == 0:
             return None
         try:
+            TIME_REQUEST_SENT.set(time.time())
             body = self.body(row, consignment)
             body = json.dumps(body)
+            TIME_PROCESSING_STARTED.set(time.time())
             response = requests.post(self.url, data=body, headers=self.headers, timeout=120)
+            TIME_REQUEST_RECEIVED.set(time.time())
             response.raise_for_status()
             return response.json()
         except Exception as ex:

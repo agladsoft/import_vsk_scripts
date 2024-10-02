@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 from datetime import datetime
-from parsed import ParsedDf
+from parsed import ParsedDf, start_http_server
 
 headers_eng: dict = {
     "Год": "year",
@@ -99,5 +99,6 @@ class ImportVSK(object):
         self.write_to_json(df.to_dict('records'))
 
 
+start_http_server(8096)
 import_vsk: ImportVSK = ImportVSK(sys.argv[1], sys.argv[2])
 import_vsk.main()
