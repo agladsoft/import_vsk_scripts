@@ -48,7 +48,7 @@ def unified_list_line_name():
     client = clickhouse_client()
     items = {}
     line_unified_query = client.query(
-        f"SELECT * FROM reference_lines where line_unified in ('REEL SHIPPING','SAFETRANS','SINOKOR','MSC','ARKAS','HEUNG')")
+        f"SELECT * FROM reference_lines where line_unified in ('REEL SHIPPING','SAFETRANS','SINOKOR','MSC','ARKAS','HEUNG-A LINE')")
     line_unified = line_unified_query.result_rows
     for data in line_unified:
         key, value = data[1], data[0]
