@@ -53,7 +53,7 @@ def unified_list_line_name():
     client = clickhouse_client()
     items = {}
     line_unified_query = client.query(
-        f"SELECT * FROM reference_lines where line_unified in ('REEL SHIPPING','SAFETRANS','SINOKOR','MSC','ARKAS','HEUNG-A LINE')")
+        f"SELECT * FROM reference_lines where line_unified in ('REEL SHIPPING','SAFETRANS','SINOKOR','MSC','ARKAS','HEUNG-A LINE','VUXX SHIPPING')")
     line_unified = line_unified_query.result_rows
     for data in line_unified:
         key, value = data[1], data[0]
@@ -150,7 +150,7 @@ class ParsedDf:
         self.add_new_columns()
         logging.info("Запросы к микросервису")
         data = {}
-        lines = [name for sublist in list(unified_list_line_name().values()) for name in sublist]
+        lines = [name.upper() for sublist in list(unified_list_line_name().values()) for name in sublist]
         for index, row in self.df.iterrows():
             if row.get('line', '').upper() not in lines or row.get('tracking_seaport') is not None:
                 continue
