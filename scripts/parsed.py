@@ -9,16 +9,7 @@ from typing import Optional, List
 from dotenv import load_dotenv
 from clickhouse_connect import get_client
 from clickhouse_connect.driver import Client
-from prometheus_client import start_http_server, Gauge
 
-TIME_REQUEST_SENT = Gauge('time_request_sent_seconds', 'Time when request was sent')
-TIME_PROCESSING_STARTED = Gauge('time_processing_started_seconds', 'Time when processing started')
-TIME_REQUEST_RECEIVED = Gauge('time_request_received_seconds', 'Time when response was received')
-
-# LINES = ['СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor',
-#          'ARKAS', 'arkas', 'Arkas',
-#          'MSC', 'msc', 'Msc', 'SINOKOR', 'sinokor', 'Sinokor', 'SINAKOR', 'sinakor', 'HUENG-A LINE',
-#          'HEUNG-A LINE CO., LTD', 'heung']
 HEUNG_AND_SINOKOR = ['СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor', 'HUENG-A LINE',
                      'HEUNG-A LINE CO., LTD', 'heung']
 IMPORT = ['импорт', 'import']
@@ -119,18 +110,29 @@ class ParsedDf:
             'direction': row.get('direction', 'import'),
         }
 
+    def get_vuxx_response(self, body, row):
+        vuxx_list = list(filter(None, re.split(r",|\s", row['consignment'])))
+        if len(vuxx_list) >= 1:
+            for consignment in vuxx_list:
+                body['consignment'] = consignment
+                response = requests.post(self.url, data=json.dumps(body), headers=self.headers, timeout=120)
+                response.raise_for_status()
+                if response.json():
+                    return response.json()
+
     def get_port_with_recursion(self, number_attempts: int, row, consignment) -> Optional[str]:
         if number_attempts == 0:
             return None
         try:
-            TIME_REQUEST_SENT.set(time.time())
             body = self.body(row, consignment)
-            body = json.dumps(body)
-            TIME_PROCESSING_STARTED.set(time.time())
-            response = requests.post(self.url, data=body, headers=self.headers, timeout=120)
-            TIME_REQUEST_RECEIVED.set(time.time())
-            response.raise_for_status()
-            return response.json()
+            if body['line'] == 'VUXX SHIPPING':
+                return self.get_vuxx_response(body, row)
+
+            else:
+                body = json.dumps(body)
+                response = requests.post(self.url, data=body, headers=self.headers, timeout=120)
+                response.raise_for_status()
+                return response.json()
         except Exception as ex:
             logging.error(f"Exception is {ex}")
             time.sleep(30)
