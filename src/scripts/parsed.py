@@ -70,8 +70,7 @@ def get_line_tracking_empty() -> List[str]:
     return [i[0].upper() for i in line_unified]
 
 
-LINES = unified_list_line_name()
-HEUNG_AND_SINOKOR_REEL = get_line_tracking_empty()
+
 
 
 class ParsedDf:
@@ -84,7 +83,7 @@ class ParsedDf:
 
     @staticmethod
     def check_lines(row: dict) -> bool:
-        if row.get('line', '').upper() in HEUNG_AND_SINOKOR_REEL:
+        if row.get('line', '').upper() in get_line_tracking_empty():
             return False
         return True
 
@@ -103,7 +102,7 @@ class ParsedDf:
 
     def body(self, row, consignment):
         consignment_number = self.get_number_consignment(row.get(consignment))
-        line_unified = get_line_unified(LINES, row.get('line'))
+        line_unified = get_line_unified(unified_list_line_name(), row.get('line'))
         return {
             'line': line_unified,
             'consignment': consignment_number,
@@ -194,7 +193,7 @@ class ParsedDf:
 
     @staticmethod
     def check_line(line):
-        if line not in LINES:
+        if line not in unified_list_line_name():
             return True
         return False
 

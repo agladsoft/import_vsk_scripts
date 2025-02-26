@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 from datetime import datetime
-from parsed import ParsedDf
+from src.scripts.parsed import ParsedDf
 
 headers_eng: dict = {
     "Год": "year",
@@ -77,27 +77,64 @@ class ImportVSK(object):
         with open(f"{output_file_path}", 'w', encoding='utf-8') as f:
             json.dump(parsed_data, f, ensure_ascii=False, indent=4)
 
-    def main(self) -> None:
-        """
-        The main function where we read the Excel file and write the file to json.
-        """
+    def read_file(self) -> DataFrame:
+        """Read the Excel file and drop rows with all NaN values.
+
+                This function reads the Excel file specified by the input file path,
+                and drops any rows where all values are NaN.
+
+                Args:
+                    self: Instance of the class.
+
+                Returns:
+                    DataFrame: The DataFrame read from the Excel file with rows containing all NaN values dropped.
+                """
         df: DataFrame = pd.read_excel(self.input_file_path, dtype={"ИНН": str})
         df = df.dropna(axis=0, how='all')
-        original_columns = list(df.columns)
-        df = df.rename(columns=headers_eng)
-        renamed_columns = list(df.columns)
+        return df
+    @staticmethod
+    def transformation_df(dataframe: DataFrame) -> DataFrame:
+        """Rename and process the DataFrame columns.
+
+                This function renames the columns of the input DataFrame according to the headers_eng mapping,
+                drops common columns if the renaming changes the set of columns, and strips whitespace from string values.
+
+                Args:
+                    dataframe (DataFrame): The input DataFrame.
+
+                Returns:
+                    DataFrame: The transformed DataFrame.
+                """
+        original_columns: list = list(dataframe.columns)
+        df: DataFrame = dataframe.rename(columns=headers_eng)
+        renamed_columns: list = list(df.columns)
         same_columns: set = set(original_columns) & set(renamed_columns)
         if len(same_columns) != len(original_columns):
-            df = df.drop(columns=same_columns)
-        df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-        self.add_new_columns(df)
-        self.change_type_and_values(df)
+            df: DataFrame = df.drop(columns=same_columns)
+        df: DataFrame = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+        return df
+
+    def get_port(self, df) -> DataFrame:
         df = df.replace({np.nan: None, "NaT": None})
         df["direction"] = df["direction"].replace({"импорт": "import", "экспорт": "export", "каботаж": "cabotage"})
         ParsedDf(df).get_port()
         df = df.replace({np.nan: None, "NaT": None})
-        self.write_to_json(df.to_dict('records'))
+        return df
+
+    def main(self) -> None:
+        """
+        The main function where we read the Excel file and write the file to json.
+        """
+        df_init: DataFrame = self.read_file()
+        df_trans: DataFrame = self.transformation_df(df_init)
+        self.add_new_columns(df_trans)
+        self.change_type_and_values(df_trans)
+        df_port: DataFrame = self.get_port(df_trans)
+        self.write_to_json(df_port.to_dict('records'))
 
 
-import_vsk: ImportVSK = ImportVSK(sys.argv[1], sys.argv[2])
-import_vsk.main()
+
+
+if __name__ == "__main__":
+    import_vsk: ImportVSK = ImportVSK(sys.argv[1], sys.argv[2])
+    import_vsk.main()
